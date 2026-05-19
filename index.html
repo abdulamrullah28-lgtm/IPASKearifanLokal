@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoli Kearifan Lokal Sidoarjo</title>
+    <!-- Tailwind CSS untuk Styling Responsif & Cepat -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Lucide untuk Ikon Grafis yang Menarik -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Plus+Jakarta+Sans:wght@300..800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f0fdf4;
+        }
+
+        .font-kids {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Desain Khusus Papan Monopoli Berbentuk Grid */
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(11, minmax(0, 1fr));
+            grid-template-rows: repeat(11, minmax(0, 1fr));
+            aspect-ratio: 1 / 1;
+            width: 100%;
+            max-width: 780px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Posisi Koordinat Petak Monopoli Searah Jarum Jam */
+        .cell-0 { grid-column: 11; grid-row: 11; } /* START */
+        .cell-1 { grid-column: 10; grid-row: 11; } /* Waru */
+        .cell-2 { grid-column: 9; grid-row: 11; }  /* Sedati */
+        .cell-3 { grid-column: 8; grid-row: 11; }  /* Dana Umum */
+        .cell-4 { grid-column: 7; grid-row: 11; }  /* Gedangan */
+        .cell-5 { grid-column: 6; grid-row: 11; }  /* Stasiun Waru */
+        .cell-6 { grid-column: 5; grid-row: 11; }  /* Buduran */
+        .cell-7 { grid-column: 4; grid-row: 11; }  /* Sidoarjo */
+        .cell-8 { grid-column: 3; grid-row: 11; }  /* PDAM */
+        .cell-9 { grid-column: 2; grid-row: 11; }  /* Candi */
+        .cell-10 { grid-column: 1; grid-row: 11; } /* PENJARA */
+
+        .cell-11 { grid-column: 1; grid-row: 10; } /* Porong */
+        .cell-12 { grid-column: 1; grid-row: 9; }  /* Tanggulangin */
+        .cell-13 { grid-column: 1; grid-row: 8; }  /* Kesempatan */
+        .cell-14 { grid-column: 1; grid-row: 7; }  /* Jabon */
+        .cell-15 { grid-column: 1; grid-row: 6; }  /* Stasiun Sidoarjo */
+        .cell-16 { grid-column: 1; grid-row: 5; }  /* Krembung */
+        .cell-17 { grid-column: 1; grid-row: 4; }  /* Tulangan */
+        .cell-18 { grid-column: 1; grid-row: 3; }  /* PLN */
+        .cell-19 { grid-column: 1; grid-row: 2; }  /* Prambon */
+        .cell-20 { grid-column: 1; grid-row: 1; }  /* BEBAS PARKIR */
+
+        .cell-21 { grid-column: 2; grid-row: 1; }  /* Tarik */
+        .cell-22 { grid-column: 3; grid-row: 1; }  /* Wonoayu */
+        .cell-23 { grid-column: 4; grid-row: 1; }  /* Dana Umum */
+        .cell-24 { grid-column: 5; grid-row: 1; }  /* Balongbendo */
+        .cell-25 { grid-column: 6; grid-row: 1; }  /* Stasiun Krian */
+        .cell-26 { grid-column: 7; grid-row: 1; }  /* Krian */
+        .cell-27 { grid-column: 8; grid-row: 1; }  /* Taman */
+        .cell-28 { grid-column: 9; grid-row: 1; }  /* Kesempatan */
+        .cell-29 { grid-column: 1; grid-row: 1; }  /* Duplikat Bebas Parkir / Overwrite */
+        .cell-29 { grid-column: 10; grid-row: 1; } /* Sukodono */
+        .cell-30 { grid-column: 11; grid-row: 1; } /* MASUK PENJARA */
+
+        .cell-31 { grid-column: 11; grid-row: 2; } /* Stasiun Gedangan */
+        .cell-32 { grid-column: 11; grid-row: 3; } /* Sidoarjo Kota (Ulang / Tambahan) */
+        .cell-33 { grid-column: 11; grid-row: 4; } /* Dana Umum */
+        .cell-34 { grid-column: 11; grid-row: 5; } /* Gedangan */
+        .cell-35 { grid-column: 11; grid-row: 6; } /* Buduran */
+        .cell-36 { grid-column: 11; grid-row: 7; } /* Krian */
+        .cell-37 { grid-column: 11; grid-row: 8; } /* Kesempatan */
+        .cell-38 { grid-column: 11; grid-row: 9; } /* Waru */
+        .cell-39 { grid-column: 11; grid-row: 10; } /* Pajak Sidoarjo */
+
+        /* Pusat Papan Monopoli */
+        .board-center {
+            grid-column: 2 / 11;
+            grid-row: 2 / 11;
+            background-color: #fefcf0;
+            border: 4px dashed #eab308;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animasi 3D Dadu */
+        .cube-container {
+            perspective: 400px;
+            width: 70px;
+            height: 70px;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease-out;
+        }
+        .face {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: white;
+            border: 3px solid #1e3a8a;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+        }
+        /* Penempatan Sisi Dadu 3D */
+        .face-1 { transform: rotateY(0deg) translateZ(35px); }
+        .face-2 { transform: rotateY(90deg) translateZ(35px); }
+        .face-3 { transform: rotateX(90deg) translateZ(35px); }
+        .face-4 { transform: rotateX(-90deg) translateZ(35px); }
+        .face-5 { transform: rotateY(-90deg) translateZ(35px); }
+        .face-6 { transform: rotateY(180deg) translateZ(35px); }
+
+        /* Sisi Atas Blok */
+        .color-bar {
+            height: 14px;
+            width: 100%;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+        }
+
+        /* Maskot Sidoarjo (Batik Jetis Pattern) */
+        .batik-pattern {
+            background-image: radial-gradient(#eab308 10%, transparent 11%), radial-gradient(#eab308 10%, transparent 11%);
+            background-size: 16px 16px;
+            background-position: 0 0, 8px 8px;
+            opacity: 0.15;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        /* Gerakan Pion Melompat */
+        .pion-bounce {
+            animation: bouncePion 0.5s ease infinite alternate;
+        }
+        @keyframes bouncePion {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 md:p-6 select-none overflow-x-hidden">
+
+    <!-- MUSIK LATAR BELAKANG & AUDIOMANAGER (Web Audio API) -->
+    <div class="hidden">
+        <audio id="bgm" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-6xl bg-amber-50 rounded-3xl border-8 border-amber-500 shadow-2xl overflow-hidden relative p-4 md:p-6 min-h-[90vh] flex flex-col justify-between">
+        
+        <!-- MOTIF BATIK HIASAN SUDUT -->
+        <div class="absolute top-0 left-0 w-24 h-24 bg-yellow-400 opacity-25 rounded-br-full pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-24 h-24 bg-yellow-400 opacity-25 rounded-tl-full pointer-events-none"></div>
+
+        <!-- ================= HALAMAN 1: BERANDA / HOME ================= -->
+        <div id="screen-home" class="flex flex-col items-center justify-center py-8 text-center flex-grow">
+            <!-- Header Logo Khas Sidoarjo -->
+            <div class="relative mb-6">
+                <span class="text-xs bg-red-600 text-white font-bold px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md">Game Edukasi Anak Sekolah</span>
+                <h1 class="text-4xl md:text-6xl font-kids font-extrabold text-indigo-900 drop-shadow-lg tracking-wide mt-3">
+                    MONOPOLI <br>
+                    <span class="text-amber-500 text-3xl md:text-5xl">Kearifan Lokal Sidoarjo</span>
+                </h1>
+                <p class="text-sm md:text-base text-teal-800 font-semibold mt-2">Belajar Menyenangkan Mengenal Budaya, Industri Kreatif, dan Geografi Delta</p>
+            </div>
+
+            <!-- Maskot Ilustrasi Sidoarjo -->
+            <div class="flex items-center gap-6 my-6 p-4 bg-white/80 rounded-2xl border-4 border-yellow-300 max-w-lg shadow-inner relative">
+                <div class="text-5xl">🦞🐟</div>
+                <div class="text-left text-xs md:text-sm text-amber-900 font-medium">
+                    "Halo Rek! Ayo jelajahi 18 kecamatan di Sidoarjo, beli aset terbaik, kelola keuanganmu dengan bijak, dan jadilah <strong>Bupati Cilik Sidoarjo</strong>!"
+                </div>
+            </div>
+
+            <!-- Menu Buttons -->
+            <div class="flex flex-col gap-4 w-full max-w-sm mt-4">
+                <button onclick="switchScreen('screen-setup')" class="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-kids text-xl md:text-2xl py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-150 flex items-center justify-center gap-3 border-b-4 border-green-800">
+                    <i data-lucide="play-circle" class="w-8 h-8"></i> Mulai Game
+                </button>
+                <button onclick="openModalInfo('petunjuk')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2 border-b-4 border-indigo-900 transition-all">
+                    <i data-lucide="help-circle" class="w-5 h-5"></i> Petunjuk Bermain
+                </button>
+                <button onclick="openModalInfo('profil')" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2 border-b-4 border-amber-700 transition-all">
+                    <i data-lucide="map" class="w-5 h-5"></i> Profil Kabupaten Sidoarjo
+                </button>
+                <button onclick="window.close(); alert('Gunakan tombol silang tab untuk menutup game ini.')" class="bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-2xl shadow-md flex items-center justify-center gap-2 border-b-4 border-rose-700 transition-all">
+                    <i data-lucide="log-out" class="w-5 h-5"></i> Keluar
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 2: SETUP IDENTITAS PEMAIN ================= -->
+        <div id="screen-setup" class="hidden flex-col flex-grow py-4">
+            <button onclick="switchScreen('screen-home')" class="self-start text-indigo-800 font-semibold flex items-center gap-1 mb-4 hover:underline">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i> Kembali ke Menu
+            </button>
+            
+            <h2 class="text-3xl font-kids text-center text-indigo-900 mb-6">Pendaftaran Peserta Monopoli</h2>
+            
+            <!-- Jumlah Pemain -->
+            <div class="bg-white p-4 rounded-2xl border-2 border-yellow-400 max-w-md mx-auto mb-6 text-center shadow-sm">
+                <label class="block text-amber-900 font-bold mb-2">Pilih Jumlah Pemain:</label>
+                <div class="flex justify-center gap-3">
+                    <button id="btn-p2" onclick="setPlayerCount(2)" class="px-5 py-2 rounded-xl border-2 border-indigo-900 bg-indigo-900 text-white font-bold transition-all">2 Pemain</button>
+                    <button id="btn-p3" onclick="setPlayerCount(3)" class="px-5 py-2 rounded-xl border-2 border-indigo-300 bg-white text-indigo-900 font-bold transition-all">3 Pemain</button>
+                    <button id="btn-p4" onclick="setPlayerCount(4)" class="px-5 py-2 rounded-xl border-2 border-indigo-300 bg-white text-indigo-900 font-bold transition-all">4 Pemain</button>
+                </div>
+            </div>
+
+            <!-- Form Detail Pemain -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto flex-grow" id="players-form-container">
+                <!-- Form akan diisi dinamis oleh JavaScript -->
+            </div>
+
+            <div class="text-center mt-8">
+                <button onclick="startGame()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-kids text-2xl py-4 px-12 rounded-2xl shadow-xl transform hover:scale-105 transition-all border-b-4 border-green-700">
+                    Masuk Ke Papan Permainan! 🏁
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 3: SCREEN PAPAN PERMAINAN ================= -->
+        <div id="screen-game" class="hidden flex-col lg:flex-row gap-4 flex-grow">
+            <!-- SISI KIRI: PAPAN MONOPOLI -->
+            <div class="flex-grow flex items-center justify-center">
+                <div class="board-grid bg-emerald-100 border-4 border-amber-950 rounded-xl shadow-lg relative p-1 overflow-hidden">
+                    <div class="batik-pattern"></div>
+                    
+                    <!-- PUSAT PAPAN MONOPOLI -->
+                    <div class="board-center p-3 relative">
+                        <img src="https://images.unsplash.com/photo-1621574539437-4b7cb63120b8?auto=format&fit=crop&q=80&w=400" alt="Sidoarjo" class="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none">
+                        
+                        <div class="relative z-10">
+                            <span class="text-xs bg-amber-500 text-amber-950 font-bold px-3 py-0.5 rounded-full shadow">TEMA KEARIFAN LOKAL</span>
+                            <h3 class="text-2xl md:text-3xl font-kids font-extrabold text-indigo-950 leading-tight mt-1">Sidoarjo</h3>
+                            <p class="text-[10px] md:text-xs text-indigo-800/80 font-bold max-w-xs mt-1">Kelola modal <strong class="text-emerald-700">Rp500.000</strong> milikmu untuk memajukan pembangunan Sidoarjo!</p>
+                        </div>
+
+                        <!-- Panel Dadu Interaktif -->
+                        <div class="mt-4 flex flex-col items-center bg-white/90 p-3 rounded-2xl border-2 border-yellow-400 shadow-md">
+                            <div class="cube-container mb-2">
+                                <div class="cube" id="dice-cube">
+                                    <div class="face face-1">⚀</div>
+                                    <div class="face face-2">⚁</div>
+                                    <div class="face face-3">⚂</div>
+                                    <div class="face face-4">⚃</div>
+                                    <div class="face face-5">⚄</div>
+                                    <div class="face face-6">⚅</div>
+                                </div>
+                            </div>
+                            <button id="btn-roll-dice" onclick="rollDice()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-md border-b-2 border-indigo-900 transition-all">
+                                Kocok Dadu 🎲
+                            </button>
+                        </div>
+
+                        <!-- Keterangan Turn -->
+                        <div class="mt-3 bg-indigo-50 border border-indigo-200 px-4 py-1.5 rounded-full text-xs font-extrabold text-indigo-950 shadow-sm animate-pulse" id="turn-indicator">
+                            Giliran: Pemain 1
+                        </div>
+                    </div>
+
+                    <!-- PETAK-PETAK GENERATED SECARA MANUAL UNTUK MENJAMIN POSISI PRESISI -->
+                    <!-- SISI BAWAH (Kanan ke Kiri) -->
+                    <div id="cell-0" class="cell-0 border border-amber-900 bg-orange-400 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="bg-red-600 text-white py-0.5 rounded-sm">START</span>
+                        <span class="text-yellow-100 text-[8px]">Dapatkan Rp50.000</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-0"></div>
+                    </div>
+                    
+                    <div id="cell-1" class="cell-1 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-rose-500"></div>
+                        <span>Waru</span>
+                        <span class="text-emerald-700">Rp60rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-1"></div>
+                    </div>
+
+                    <div id="cell-2" class="cell-2 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-rose-500"></div>
+                        <span>Sedati</span>
+                        <span class="text-emerald-700">Rp60rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-2"></div>
+                    </div>
+
+                    <div id="cell-3" class="cell-3 border border-amber-900 bg-amber-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-blue-600 text-center text-xs">✉️</div>
+                        <span>Dana Umum</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-3"></div>
+                    </div>
+
+                    <div id="cell-4" class="cell-4 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-rose-500"></div>
+                        <span>Gedangan</span>
+                        <span class="text-emerald-700">Rp80rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-4"></div>
+                    </div>
+
+                    <div id="cell-5" class="cell-5 border border-amber-900 bg-sky-200 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">🚂</span>
+                        <span>Stasiun Waru</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-5"></div>
+                    </div>
+
+                    <div id="cell-6" class="cell-6 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-emerald-500"></div>
+                        <span>Buduran</span>
+                        <span class="text-emerald-700">Rp100rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-6"></div>
+                    </div>
+
+                    <div id="cell-7" class="cell-7 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-emerald-500"></div>
+                        <span>Sidoarjo</span>
+                        <span class="text-emerald-700">Rp100rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-7"></div>
+                    </div>
+
+                    <div id="cell-8" class="cell-8 border border-amber-900 bg-blue-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">💧</span>
+                        <span>PDAM Sda</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-8"></div>
+                    </div>
+
+                    <div id="cell-9" class="cell-9 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-emerald-500"></div>
+                        <span>Candi</span>
+                        <span class="text-emerald-700">Rp120rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-9"></div>
+                    </div>
+
+                    <div id="cell-10" class="cell-10 border border-amber-900 bg-amber-400 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="bg-black text-white text-[7px] py-0.5 rounded-sm">PENJARA</span>
+                        <span class="text-[7px]">Kunjungan Biasa</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-10"></div>
+                    </div>
+
+                    <!-- SISI KIRI (Bawah ke Atas) -->
+                    <div id="cell-11" class="cell-11 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-yellow-500"></div>
+                        <span>Porong</span>
+                        <span class="text-emerald-700">Rp140rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-11"></div>
+                    </div>
+
+                    <div id="cell-12" class="cell-12 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-yellow-500"></div>
+                        <span>Tanggulangin</span>
+                        <span class="text-emerald-700">Rp140rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-12"></div>
+                    </div>
+
+                    <div id="cell-13" class="cell-13 border border-amber-900 bg-orange-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-amber-600 text-xs">⭐</div>
+                        <span>Kesempatan</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-13"></div>
+                    </div>
+
+                    <div id="cell-14" class="cell-14 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-yellow-500"></div>
+                        <span>Jabon</span>
+                        <span class="text-emerald-700">Rp160rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-14"></div>
+                    </div>
+
+                    <div id="cell-15" class="cell-15 border border-amber-900 bg-sky-200 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">🚂</span>
+                        <span>Stasiun Sda</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-15"></div>
+                    </div>
+
+                    <div id="cell-16" class="cell-16 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-sky-500"></div>
+                        <span>Krembung</span>
+                        <span class="text-emerald-700">Rp180rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-16"></div>
+                    </div>
+
+                    <div id="cell-17" class="cell-17 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-sky-500"></div>
+                        <span>Tulangan</span>
+                        <span class="text-emerald-700">Rp180rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-17"></div>
+                    </div>
+
+                    <div id="cell-18" class="cell-18 border border-amber-900 bg-amber-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">⚡</span>
+                        <span>PLN Sda</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-18"></div>
+                    </div>
+
+                    <div id="cell-19" class="cell-19 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-sky-500"></div>
+                        <span>Prambon</span>
+                        <span class="text-emerald-700">Rp200rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-19"></div>
+                    </div>
+
+                    <!-- SISI ATAS (Kiri ke Kanan) -->
+                    <div id="cell-20" class="cell-20 border border-amber-900 bg-amber-400 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="bg-teal-600 text-white py-0.5 rounded-sm">PARKIR</span>
+                        <span>Bebas Istirahat</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-20"></div>
+                    </div>
+
+                    <div id="cell-21" class="cell-21 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-purple-500"></div>
+                        <span>Tarik</span>
+                        <span class="text-emerald-700">Rp220rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-21"></div>
+                    </div>
+
+                    <div id="cell-22" class="cell-22 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-purple-500"></div>
+                        <span>Wonoayu</span>
+                        <span class="text-emerald-700">Rp220rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-22"></div>
+                    </div>
+
+                    <div id="cell-23" class="cell-23 border border-amber-900 bg-amber-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-blue-600 text-xs">✉️</div>
+                        <span>Dana Umum</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-23"></div>
+                    </div>
+
+                    <div id="cell-24" class="cell-24 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-purple-500"></div>
+                        <span>Balongbendo</span>
+                        <span class="text-emerald-700">Rp240rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-24"></div>
+                    </div>
+
+                    <div id="cell-25" class="cell-25 border border-amber-900 bg-sky-200 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">🚂</span>
+                        <span>Stasiun Krian</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-25"></div>
+                    </div>
+
+                    <div id="cell-26" class="cell-26 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-orange-500"></div>
+                        <span>Krian</span>
+                        <span class="text-emerald-700">Rp260rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-26"></div>
+                    </div>
+
+                    <div id="cell-27" class="cell-27 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-orange-500"></div>
+                        <span>Taman</span>
+                        <span class="text-emerald-700">Rp260rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-27"></div>
+                    </div>
+
+                    <div id="cell-28" class="cell-28 border border-amber-900 bg-orange-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-amber-600 text-xs">⭐</div>
+                        <span>Kesempatan</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-28"></div>
+                    </div>
+
+                    <div id="cell-29" class="cell-29 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-orange-500"></div>
+                        <span>Sukodono</span>
+                        <span class="text-emerald-700">Rp280rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-29"></div>
+                    </div>
+
+                    <!-- SISI KANAN (Atas ke Bawah) -->
+                    <div id="cell-30" class="cell-30 border border-amber-900 bg-red-500 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="bg-black text-white py-0.5 rounded-sm">MASUK</span>
+                        <span class="text-white">PENJARA</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-30"></div>
+                    </div>
+
+                    <div id="cell-31" class="cell-31 border border-amber-900 bg-sky-200 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-xs">🚂</span>
+                        <span>St. Gedangan</span>
+                        <span class="text-blue-800">Rp150rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-31"></div>
+                    </div>
+
+                    <div id="cell-32" class="cell-32 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-indigo-500"></div>
+                        <span>Sidoarjo Kota</span>
+                        <span class="text-emerald-700">Rp300rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-32"></div>
+                    </div>
+
+                    <div id="cell-33" class="cell-33 border border-amber-900 bg-amber-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-blue-600 text-xs">✉️</div>
+                        <span>Dana Umum</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-33"></div>
+                    </div>
+
+                    <div id="cell-34" class="cell-34 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-indigo-500"></div>
+                        <span>Gedangan Baru</span>
+                        <span class="text-emerald-700">Rp300rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-34"></div>
+                    </div>
+
+                    <div id="cell-35" class="cell-35 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-indigo-500"></div>
+                        <span>Buduran Indah</span>
+                        <span class="text-emerald-700">Rp320rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-35"></div>
+                    </div>
+
+                    <div id="cell-36" class="cell-36 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-red-700"></div>
+                        <span>Krian Kota</span>
+                        <span class="text-emerald-700">Rp350rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-36"></div>
+                    </div>
+
+                    <div id="cell-37" class="cell-37 border border-amber-900 bg-orange-100 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="text-amber-600 text-xs">⭐</div>
+                        <span>Kesempatan</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-37"></div>
+                    </div>
+
+                    <div id="cell-38" class="cell-38 border border-amber-900 bg-white flex flex-col justify-between p-0 text-center font-bold text-[8px] md:text-[10px]">
+                        <div class="color-bar bg-red-700"></div>
+                        <span>Waru Pusat</span>
+                        <span class="text-emerald-700">Rp400rb</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-38"></div>
+                    </div>
+
+                    <div id="cell-39" class="cell-39 border border-amber-900 bg-orange-200 flex flex-col justify-between p-1 text-center font-bold text-[8px] md:text-[10px]">
+                        <span class="text-[8px] text-red-600 font-extrabold">RETRIBUSI DAERAH</span>
+                        <span>Bayar Rp25.000</span>
+                        <div class="flex flex-wrap gap-0.5 justify-center" id="pion-container-39"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SISI KANAN: DASBOR SKOR & LOG AKTIVITAS -->
+            <div class="w-full lg:w-80 flex flex-col gap-4">
+                <!-- Status & Saldo Keuangan Pemain -->
+                <div class="bg-white p-4 rounded-2xl border-2 border-indigo-200 shadow-md">
+                    <h3 class="font-kids text-lg text-indigo-950 mb-3 flex items-center gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-indigo-600"></i> Keuangan Pemain
+                    </h3>
+                    <div id="leaderboard-container" class="flex flex-col gap-2">
+                        <!-- Diisi otomatis -->
+                    </div>
+                </div>
+
+                <!-- Log Aktivitas Monopoli -->
+                <div class="bg-indigo-950 text-indigo-100 p-4 rounded-2xl shadow-md flex-grow flex flex-col min-h-[180px] max-h-[300px] lg:max-h-none">
+                    <span class="text-xs uppercase text-amber-400 font-extrabold tracking-wider mb-2">Buku Catatan Kegiatan Sidoarjo</span>
+                    <div id="log-container" class="overflow-y-auto text-xs flex-grow space-y-1.5 pr-2">
+                        <p class="text-emerald-400">🏁 Selamat datang! Silakan lempar dadu untuk memulai perjalanan!</p>
+                    </div>
+                </div>
+
+                <!-- Tombol Berhenti & Musik -->
+                <div class="flex gap-2">
+                    <button onclick="toggleAudio()" class="bg-white hover:bg-slate-100 border-2 border-slate-300 text-slate-700 p-3 rounded-xl flex-grow font-semibold flex items-center justify-center gap-2 text-xs">
+                        <i data-lucide="music" class="w-4 h-4"></i> Musik: <span id="music-status">OFF</span>
+                    </button>
+                    <button onclick="finishGame()" class="bg-rose-500 hover:bg-rose-600 text-white p-3 rounded-xl flex-grow font-semibold flex items-center justify-center gap-2 text-xs border-b-2 border-rose-800">
+                        <i data-lucide="award" class="w-4 h-4"></i> Akhiri Permainan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HALAMAN 4: SCREEN SKOR AKHIR / KLASEMEN JUARA ================= -->
+        <div id="screen-gameover" class="hidden flex-col items-center justify-center py-8 text-center flex-grow">
+            <span class="text-4xl">👑</span>
+            <h2 class="text-4xl md:text-5xl font-kids font-extrabold text-indigo-950 mt-2">Selamat Rek!</h2>
+            <p class="text-sm text-teal-800 font-semibold mb-6">Siswa-Siswi Hebat Telah Berhasil Mengelola Kabupaten Sidoarjo dengan Baik</p>
+
+            <div class="w-full max-w-2xl bg-white rounded-2xl border-4 border-amber-400 p-6 shadow-xl mb-8">
+                <h3 class="font-kids text-xl text-amber-950 mb-4">Papan Klasemen Akhir</h3>
+                <div id="final-scoreboard" class="space-y-3">
+                    <!-- Dinamis -->
+                </div>
+            </div>
+
+            <button onclick="restartGame()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-kids text-2xl py-4 px-12 rounded-2xl shadow-xl transform hover:scale-105 transition-all border-b-4 border-indigo-900">
+                Main Lagi! 🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= DYNAMIC MODALS ================= -->
+    <!-- 1. MODAL BOX TRANSAKSI / BELI ASET -->
+    <div id="modal-action" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white border-8 border-yellow-400 rounded-3xl p-6 max-w-md w-full shadow-2xl text-center transform scale-95 transition-all duration-150">
+            <span class="text-4xl" id="modal-action-icon">🏛️</span>
+            <h3 class="text-2xl font-kids text-indigo-950 mt-2" id="modal-action-title">Judul Aset</h3>
+            <p class="text-sm text-amber-900/80 my-4 leading-relaxed font-semibold" id="modal-action-desc">Keterangan penawaran aset...</p>
+            
+            <div class="flex gap-4 justify-center mt-6">
+                <button id="modal-btn-confirm" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md border-b-4 border-green-800 transition-all flex items-center gap-1">
+                    <i data-lucide="check" class="w-5 h-5"></i> Beli Sekarang
+                </button>
+                <button id="modal-btn-cancel" class="bg-rose-500 hover:bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md border-b-4 border-rose-800 transition-all flex items-center gap-1">
+                    <i data-lucide="x" class="w-5 h-5"></i> Lewati
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MODAL BOX INFO (PETUNJUK & PROFIL SIDOARJO) -->
+    <div id="modal-info" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-amber-50 border-8 border-indigo-900 rounded-3xl p-6 max-w-2xl w-full shadow-2xl relative max-h-[85vh] flex flex-col">
+            <button onclick="closeModalInfo()" class="absolute top-3 right-3 text-indigo-950 hover:bg-amber-200 p-2 rounded-full transition-all">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            
+            <div id="modal-info-content" class="overflow-y-auto pr-2">
+                <!-- Isi Dinamis -->
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO GENERATOR (Agar Suara Tetap Hidup Tanpa Perlu Aset Luar) -->
+    <script>
+        // Menggunakan Web Audio API untuk generate sound effect instan & bebas gangguan
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'dice') {
+                    // Bunyi kocokan dadu berisik acak
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'cash') {
+                    // Bunyi koin gemerincing berturut-turut
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(987.77, audioCtx.currentTime); // B5
+                    osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.08); // E6
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else if (type === 'success') {
+                    // Bunyi kemenangan riang
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                    osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3); // C6
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                } else if (type === 'fail') {
+                    // Bunyi bayar sewa/sanksi
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.4);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }
+            } catch (e) {
+                console.log("Audio Context Belum Diaktivasi oleh Interaksi Pengguna.");
+            }
+        }
+    </script>
+
+    <!-- LOGIKA & DATA MONOPOLI SIDOARJO -->
+    <script>
+        // Data Seluruh 40 Petak Sidoarjo (Pola Monopoli Tradisional)
+        const sdaBoard = [
+            { id: 0, name: "START", type: "start", rent: 50000, desc: "Awal petualanganmu di Kota Udang!" },
+            { id: 1, name: "Kec. Waru", type: "property", group: "merah", price: 60000, rent: 4000, owner: null, color: "bg-rose-500", desc: "Pintu gerbang masuk Sidoarjo, terkenal dengan industri logam dan kerajinan tangan." },
+            { id: 2, name: "Kec. Sedati", type: "property", group: "merah", price: 60000, rent: 4000, owner: null, color: "bg-rose-500", desc: "Sentra budidaya perikanan air payau dan kuliner laut lezat." },
+            { id: 3, name: "Dana Umum", type: "dana_umum" },
+            { id: 4, name: "Kec. Gedangan", type: "property", group: "merah", price: 80000, rent: 6000, owner: null, color: "bg-rose-500", desc: "Kawasan industri manufaktur dan perumahan yang terus berkembang." },
+            { id: 5, name: "Stasiun Waru", type: "stasiun", price: 150000, rent: 15000, owner: null, desc: "Akses perkeretaapian vital yang menghubungkan Surabaya dan Sidoarjo." },
+            { id: 6, name: "Kec. Buduran", type: "property", group: "hijau", price: 100000, rent: 8000, owner: null, color: "bg-emerald-500", desc: "Pusat industri kreatif, museum purbakala, dan aneka jajanan tradisional." },
+            { id: 7, name: "Kec. Sidoarjo", type: "property", group: "hijau", price: 100000, rent: 8000, owner: null, color: "bg-emerald-500", desc: "Jantung pemerintahan kabupaten dengan Monumen Jayandaru di Alun-alun." },
+            { id: 8, name: "PDAM Sidoarjo", type: "utilitas", price: 150000, rent: 10000, owner: null, desc: "Penyedia air bersih untuk mendukung sanitasi sehat warga Sidoarjo." },
+            { id: 9, name: "Kec. Candi", type: "property", group: "hijau", price: 120000, rent: 10000, owner: null, color: "bg-emerald-500", desc: "Tempat ditemukannya peninggalan bersejarah Candi Pari dan Candi Sumur." },
+            { id: 10, name: "Kunjungan Penjara", type: "jail_visit" },
+            { id: 11, name: "Kec. Porong", type: "property", group: "kuning", price: 140000, rent: 12000, owner: null, color: "bg-yellow-500", desc: "Wilayah yang tangguh pasca bencana lumpur panas Lapindo." },
+            { id: 12, name: "Kec. Tanggulangin", type: "property", group: "kuning", price: 140000, rent: 12000, owner: null, color: "bg-yellow-500", desc: "Sentra kerajinan tas, koper, dan sepatu kulit kualitas ekspor." },
+            { id: 13, name: "Kesempatan", type: "kesempatan" },
+            { id: 14, name: "Kec. Jabon", type: "property", group: "kuning", price: 160000, rent: 14000, owner: null, color: "bg-yellow-500", desc: "Kawasan tambak udang, bandeng, serta wisata bahari Tlocor." },
+            { id: 15, name: "Stasiun Sidoarjo", type: "stasiun", price: 150000, rent: 15000, owner: null, desc: "Stasiun KA kelas I yang bersejarah dan melayani rute jarak jauh." },
+            { id: 16, name: "Kec. Krembung", type: "property", group: "biru", price: 180000, rent: 16000, owner: null, color: "bg-sky-500", desc: "Penghasil tebu melimpah dan jajanan tradisional kelapa yang nikmat." },
+            { id: 17, name: "Kec. Tulangan", type: "property", group: "biru", price: 180000, rent: 16000, owner: null, color: "bg-sky-500", desc: "Pusat perkebunan rakyat dengan sejarah panjang pabrik gula." },
+            { id: 18, name: "PLN Sidoarjo", type: "utilitas", price: 150000, rent: 10000, owner: null, desc: "Penyedia pasokan listrik untuk seluruh UMKM dan industri Sidoarjo." },
+            { id: 19, name: "Kec. Prambon", type: "property", group: "biru", price: 200000, rent: 18000, owner: null, color: "bg-sky-500", desc: "Kawasan asri penyuplai produk pertanian segar di Sidoarjo Barat." },
+            { id: 20, name: "Parkir Bebas", type: "free_parking" },
+            { id: 21, name: "Kec. Tarik", type: "property", group: "ungu", price: 220000, rent: 20000, owner: null, color: "bg-purple-500", desc: "Wilayah agrowisata dan peninggalan Kerajaan Majapahit." },
+            { id: 22, name: "Kec. Wonoayu", type: "property", group: "ungu", price: 220000, rent: 20000, owner: null, color: "bg-purple-500", desc: "Sentra anyaman bambu tradisional dan kerajinan limbah kayu." },
+            { id: 23, name: "Dana Umum", type: "dana_umum" },
+            { id: 24, name: "Kec. Balongbendo", type: "property", group: "ungu", price: 240000, rent: 22000, owner: null, color: "bg-purple-500", desc: "Kawasan perbatasan yang asri dengan kuliner khas ikan kali." },
+            { id: 25, name: "Stasiun Krian", type: "stasiun", price: 150000, rent: 15000, owner: null, desc: "Pusat transit transportasi kereta api di belahan barat Sidoarjo." },
+            { id: 26, name: "Kec. Krian", type: "property", group: "oranye", price: 260000, rent: 24000, owner: null, color: "bg-orange-500", desc: "Kota satelit tersibuk kedua, terkenal dengan industri perdagangan besi." },
+            { id: 27, name: "Kec. Taman", type: "property", group: "oranye", price: 260000, rent: 24000, owner: null, color: "bg-orange-500", desc: "Pusat industri pengolahan bahan pangan dan perbatasan padat." },
+            { id: 28, name: "Kesempatan", type: "kesempatan" },
+            { id: 29, name: "Kec. Sukodono", type: "property", group: "oranye", price: 280000, rent: 26000, owner: null, color: "bg-orange-500", desc: "Daerah urban dengan potensi perkebunan bunga hias yang cantik." },
+            { id: 30, name: "Masuk Penjara", type: "go_to_jail" },
+            { id: 31, name: "St. Gedangan", type: "stasiun", price: 150000, rent: 15000, owner: null, desc: "Melayani perjalanan komuter kelas ekonomi antar wilayah delta." },
+            { id: 32, name: "Kec. Sidoarjo Kota", type: "property", group: "indigo", price: 300000, rent: 28000, owner: null, color: "bg-indigo-500", desc: "Pusat perkantoran, Alun-Alun, dan pertokoan batik khas Jetis." },
+            { id: 33, name: "Dana Umum", type: "dana_umum" },
+            { id: 34, name: "Gedangan Baru", type: "property", group: "indigo", price: 300000, rent: 28000, owner: null, color: "bg-indigo-500", desc: "Perkembangan kota baru dengan pusat perumahan ramah anak." },
+            { id: 35, name: "Buduran Indah", type: "property", group: "indigo", price: 320000, rent: 30000, owner: null, color: "bg-indigo-500", desc: "Daerah asri di tepi sungai dengan industri pengolahan kerupuk udang." },
+            { id: 36, name: "Krian Kota", type: "property", group: "red_dark", price: 350000, rent: 35000, owner: null, color: "bg-red-700", desc: "Sentra perdagangan komersial modern di barat Sidoarjo." },
+            { id: 37, name: "Kesempatan", type: "kesempatan" },
+            { id: 38, name: "Waru Pusat", type: "property", group: "red_dark", price: 400000, rent: 40000, owner: null, color: "bg-red-700", desc: "Kawasan bisnis termegah dekat perbatasan, sangat strategis." },
+            { id: 39, name: "Retribusi Daerah", type: "tax", rent: 25000, desc: "Kontribusi pembangunan taman dan perbaikan jalan Sidoarjo." }
+        ];
+
+        // Daftar Kartu Dana Umum
+        const danaUmumCards = [
+            { id: 1, text: "Mengikuti Festival Bandeng Kawak! Bandengmu paling gemuk.", type: "reward", amount: 50000 },
+            { id: 2, text: "Menjadi juara 1 lomba kreasi Batik Jetis Sidoarjo.", type: "reward", amount: 75000 },
+            { id: 3, text: "Membeli jajanan kupang lontong khas Sedati untuk sekelas.", type: "penalty", amount: 25000 },
+            { id: 4, text: "Membeli kerupuk udang untuk dukung UMKM lokal.", type: "reward", amount: 40000 },
+            { id: 5, text: "Sumbangan sosial pemeliharaan Alun-Alun Monumen Jayandaru.", type: "penalty", amount: 30000 },
+            { id: 6, text: "Memenangkan beasiswa prestasi dari Bupati Sidoarjo.", type: "reward", amount: 100000 }
+        ];
+
+        // Daftar Kartu Kesempatan
+        const kesempatanCards = [
+            { id: 1, text: "Wisata edukasi sejarah ke Candi Pari di Kecamatan Porong.", type: "move", steps: 3 },
+            { id: 2, text: "Mengikuti kirab budaya Jayandaru, mendapat piagam penghargaan.", type: "reward", amount: 30000 },
+            { id: 3, text: "Jalan macet total di depan Layang Waru saat jam berangkat sekolah.", type: "move", steps: -2 },
+            { id: 4, text: "Membantu nelayan membersihkan kerang kupang di pesisir.", type: "reward", amount: 50000 },
+            { id: 5, text: "Terlambat upacara hari Senin di sekolah, bayar denda kas OSIS.", type: "penalty", amount: 15000 },
+            { id: 6, text: "Melihat geowisata semburan Lumpur Lapindo untuk belajar geologi.", type: "move", steps: 2 }
+        ];
+
+        // Karakter Pion Anak Sekolah
+        const pionOptions = [
+            { id: "pion-1", name: "Guk Delta", emoji: "👦", color: "#3b82f6", desc: "Seragam Merah Putih Khas Delta Sidoarjo" },
+            { id: "pion-2", name: "Yuk Sidoarjo", emoji: "👧", color: "#ec4899", desc: "Batik Hijau Sekolah Khas Sidoarjo" },
+            { id: "pion-3", name: "Duta Batik", emoji: "🧑‍🎓", color: "#f59e0b", desc: "Batik Jetis Cerah Bermotif Udang Bandeng" },
+            { id: "pion-4", name: "Nelayan Kupang", emoji: "🧒", color: "#10b981", desc: "Kaos Kasual Pelestari Budaya Bahari" }
+        ];
+
+        // Global State Permainan
+        let playerCount = 2;
+        let players = [];
+        let currentPlayerIndex = 0;
+        let isMoving = false;
+
+        // Navigasi Antar Halaman
+        function switchScreen(screenId) {
+            const screens = ['screen-home', 'screen-setup', 'screen-game', 'screen-gameover'];
+            screens.forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        // Pengaturan Jumlah Pemain di Setup Screen
+        function setPlayerCount(num) {
+            playerCount = num;
+            // Update tombol seleksi warna
+            for (let i = 2; i <= 4; i++) {
+                const btn = document.getElementById(`btn-p${i}`);
+                if (i === num) {
+                    btn.className = "px-5 py-2 rounded-xl border-2 border-indigo-900 bg-indigo-900 text-white font-bold transition-all";
+                } else {
+                    btn.className = "px-5 py-2 rounded-xl border-2 border-indigo-300 bg-white text-indigo-900 font-bold transition-all";
+                }
+            }
+            renderSetupForms();
+        }
+
+        // Render Input Formulir Pemain
+        function renderSetupForms() {
+            const container = document.getElementById('players-form-container');
+            container.innerHTML = "";
+
+            for (let i = 0; i < playerCount; i++) {
+                // Pilih pion bawaan berbeda tiap form
+                const pionSel = pionOptions[i % pionOptions.length];
+                
+                let formHtml = `
+                    <div class="bg-white p-5 rounded-3xl border-4 border-indigo-100 shadow-sm flex flex-col gap-3 relative">
+                        <span class="absolute -top-3 -left-3 bg-indigo-900 text-white font-kids w-8 h-8 rounded-full flex items-center justify-center">P${i+1}</span>
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-950 uppercase mb-1">Nama Pemain:</label>
+                            <input type="text" id="player-name-${i}" value="Pemain ${i+1}" class="w-full border-2 border-slate-300 rounded-xl px-3 py-1.5 font-bold text-sm text-indigo-950 focus:border-indigo-600 outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-950 uppercase mb-1">Kelas:</label>
+                                <input type="text" id="player-kelas-${i}" value="5-A" class="w-full border-2 border-slate-300 rounded-xl px-3 py-1 text-xs text-indigo-950 focus:border-indigo-600 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-indigo-950 uppercase mb-1">Sekolah:</label>
+                                <input type="text" id="player-sekolah-${i}" value="SDN Pucang Sda" class="w-full border-2 border-slate-300 rounded-xl px-3 py-1 text-xs text-indigo-950 focus:border-indigo-600 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-indigo-950 uppercase mb-1">Karakter Pion:</label>
+                            <select id="player-pion-${i}" class="w-full border-2 border-slate-300 rounded-xl px-2 py-1.5 text-xs text-indigo-950 font-semibold focus:border-indigo-600 outline-none">
+                                ${pionOptions.map((po, index) => `
+                                    <option value="${index}" ${index === i ? 'selected' : ''}>${po.emoji} ${po.name} - ${po.desc}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += formHtml;
+            }
+        }
+
+        // Memulai Game & Inisialisasi State Pemain
+        function startGame() {
+            players = [];
+            for (let i = 0; i < playerCount; i++) {
+                const name = document.getElementById(`player-name-${i}`).value.trim() || `Pemain ${i+1}`;
+                const kelas = document.getElementById(`player-kelas-${i}`).value.trim() || "-";
+                const sekolah = document.getElementById(`player-sekolah-${i}`).value.trim() || "-";
+                const pionIndex = parseInt(document.getElementById(`player-pion-${i}`).value);
+                const pion = pionOptions[pionIndex];
+
+                players.push({
+                    id: i,
+                    name: name,
+                    kelas: kelas,
+                    sekolah: sekolah,
+                    emoji: pion.emoji,
+                    color: pion.color,
+                    pionName: pion.name,
+                    cash: 500000,
+                    position: 0,
+                    assets: [],
+                    isJailed: false,
+                    jailTurns: 0,
+                    bankrupt: false
+                });
+            }
+
+            // Atur Giliran Pemain Pertama
+            currentPlayerIndex = 0;
+            isMoving = false;
+
+            // Reset Aset Papan Sidoarjo
+            sdaBoard.forEach(b => {
+                if (b.owner !== undefined) b.owner = null;
+            });
+
+            // Ganti Layar
+            switchScreen('screen-game');
+            updateBoard();
+            updateLeaderboard();
+            
+            // Catat Log
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML = `<p class="text-emerald-400 font-bold">🏁 Game Dimulai! Semua pemain menerima dana modal Rp500.000 dari Kas Sidoarjo.</p>`;
+
+            // Aktifkan Audio Context secara halus
+            audioCtx.resume();
+            playSound('success');
+        }
+
+        // Menggambar Ulang Pion di Atas Papan Monopoli secara Akurat
+        function updateBoard() {
+            // Bersihkan semua kontainer pion di semua cell
+            for (let i = 0; i < 40; i++) {
+                const el = document.getElementById(`pion-container-${i}`);
+                if (el) el.innerHTML = "";
+            }
+
+            // Tempatkan pion di cell masing-masing
+            players.forEach(p => {
+                if (p.bankrupt) return; // Pemain bangkrut tidak tampil
+                const el = document.getElementById(`pion-container-${p.position}`);
+                if (el) {
+                    const isCurrent = players[currentPlayerIndex].id === p.id ? 'pion-bounce border-yellow-300' : 'border-white';
+                    el.innerHTML += `
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-md border-2 font-bold ${isCurrent}" style="background-color: ${p.color};" title="${p.name}">
+                            ${p.emoji}
+                        </div>
+                    `;
+                }
+            });
+
+            // Sinkronkan kepemilikan visual di papan (Menulis inisial pemilik jika dibeli)
+            sdaBoard.forEach((b, idx) => {
+                const cellEl = document.getElementById(`cell-${idx}`);
+                if (cellEl && b.owner !== undefined) {
+                    // Cek jika sudah dibeli
+                    if (b.owner !== null) {
+                        const ownerObj = players.find(p => p.id === b.owner);
+                        if (ownerObj) {
+                            // Beri tanda warna kepemilikan kecil di bagian bawah cell
+                            let ownerBadge = cellEl.querySelector('.owner-badge');
+                            if (!ownerBadge) {
+                                ownerBadge = document.createElement('div');
+                                ownerBadge.className = "owner-badge text-[7px] text-white py-0.5 mt-0.5 rounded font-extrabold w-full text-center truncate";
+                                cellEl.appendChild(ownerBadge);
+                            }
+                            ownerBadge.style.backgroundColor = ownerObj.color;
+                            ownerBadge.innerText = `MILIK: ${ownerObj.name.substring(0, 5)}`;
+                        }
+                    } else {
+                        // Bersihkan lencana pemilik jika tidak ada yang memiliki (baru mulai/reset)
+                        const ownerBadge = cellEl.querySelector('.owner-badge');
+                        if (ownerBadge) ownerBadge.remove();
+                    }
+                }
+            });
+
+            // Update petunjuk Giliran
+            const curr = players[currentPlayerIndex];
+            const turnIndicator = document.getElementById('turn-indicator');
+            turnIndicator.innerText = `Giliran: ${curr.name} ${curr.emoji}`;
+            turnIndicator.style.backgroundColor = curr.color + "20";
+            turnIndicator.style.borderColor = curr.color;
+            turnIndicator.style.color = curr.color;
+        }
+
+        // Update Papan Skor di Dashboard Kanan
+        function updateLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = "";
+
+            players.forEach((p, idx) => {
+                const activeBorder = idx === currentPlayerIndex ? 'ring-4 ring-indigo-500 bg-indigo-50/90' : 'bg-slate-50';
+                const bankruptLine = p.bankrupt ? 'opacity-40 line-through' : '';
+                
+                container.innerHTML += `
+                    <div class="p-2.5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between transition-all ${activeBorder} ${bankruptLine}">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs text-white font-bold" style="background-color: ${p.color}">
+                                ${p.emoji}
+                            </span>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-slate-900">${p.name}</h4>
+                                <p class="text-[9px] text-slate-500 font-bold">${p.sekolah} (${p.kelas})</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-extrabold text-emerald-600 block">Rp${p.cash.toLocaleString('id-ID')}</span>
+                            <span class="text-[9px] font-bold text-indigo-900 bg-indigo-100 px-1.5 py-0.5 rounded-md">${p.assets.length} Aset</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Mencatat Riwayat di Buku Kegiatan
+        function logMessage(text, colorClass = "text-indigo-200") {
+            const container = document.getElementById('log-container');
+            container.innerHTML = `<p class="${colorClass}">👉 ${text}</p>` + container.innerHTML;
+        }
+
+        // Animasi Putar Dadu 3D & Gerakan Pemain
+        function rollDice() {
+            if (isMoving) return;
+            isMoving = true;
+
+            const btn = document.getElementById('btn-roll-dice');
+            btn.disabled = true;
+            btn.className = "bg-slate-400 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-md cursor-not-allowed";
+
+            playSound('dice');
+
+            // Generate angka dadu (1-6)
+            const diceValue = Math.floor(Math.random() * 6) + 1;
+
+            // Animasi rotasi kubus dadu 3D secara acak dramatis
+            const cube = document.getElementById('dice-cube');
+            const rotations = [
+                { x: 0, y: 0 },       // 1
+                { x: 0, y: -90 },     // 2
+                { x: -90, y: 0 },     // 3
+                { x: 90, y: 0 },      // 4
+                { x: 0, y: 90 },      // 5
+                { x: 180, y: 0 }      // 6
+            ];
+            
+            const selectedRot = rotations[diceValue - 1];
+            // Beri putaran ekstra agar berputar dinamis
+            const extraX = 360 * 2;
+            const extraY = 360 * 2;
+            cube.style.transform = `rotateX(${selectedRot.x + extraX}deg) rotateY(${selectedRot.y + extraY}deg)`;
+
+            setTimeout(() => {
+                // Kembalikan rotasi stabil pada angka terpilih
+                cube.style.transform = `rotateX(${selectedRot.x}deg) rotateY(${selectedRot.y}deg)`;
+                
+                // Mulai Gerakkan Pemain setelah Dadu Berhenti
+                movePlayer(diceValue);
+            }, 850);
+        }
+
+        // Menggerakkan Pion secara Bertahap (Efek Melompat Satu per Satu)
+        function movePlayer(steps) {
+            let p = players[currentPlayerIndex];
+
+            // Bebas penjara sejenak jika di dalam penjara
+            if (p.isJailed) {
+                p.jailTurns++;
+                if (p.jailTurns >= 2) {
+                    p.isJailed = false;
+                    p.jailTurns = 0;
+                    logMessage(`${p.name} dinyatakan bebas bersyarat dari Penjara dan boleh melanjutkan perjalanan.`, "text-teal-400");
+                } else {
+                    logMessage(`${p.name} masih harus membersihkan lingkungan penjara selama 1 putaran lagi.`, "text-amber-400");
+                    finalizeTurn();
+                    return;
+                }
+            }
+
+            let stepsRemaining = steps;
+            
+            function step() {
+                if (stepsRemaining > 0) {
+                    p.position = (p.position + 1) % 40;
+                    stepsRemaining--;
+                    
+                    // Bonus Lewat START (Dapat Rp50.000)
+                    if (p.position === 0) {
+                        p.cash += 50000;
+                        playSound('cash');
+                        logMessage(`💰 ${p.name} melewati petak START & memperoleh bantuan dana Rp50.000!`, "text-emerald-400");
+                    }
+                    
+                    updateBoard();
+                    playSound('dice');
+                    setTimeout(step, 200);
+                } else if (stepsRemaining < 0) {
+                    // Logika untuk langkah mundur
+                    p.position = (p.position - 1 + 40) % 40;
+                    stepsRemaining++;
+                    updateBoard();
+                    playSound('dice');
+                    setTimeout(step, 250);
+                } else {
+                    // Selesai melangkah, eksekusi petak pendaratan
+                    handleCellLanding(p);
+                }
+            }
+
+            // Jalankan langkah
+            step();
+        }
+
+        // Penanganan Logika Saat Mendarat di Petak Tertentu
+        function handleCellLanding(player) {
+            const cell = sdaBoard[player.position];
+
+            logMessage(`${player.name} mendarat di <strong>${cell.name}</strong>.`, "text-white");
+
+            // Jenis Petak 1: START, Kunjungan Penjara, Parkir Bebas
+            if (cell.type === "start" || cell.type === "jail_visit" || cell.type === "free_parking") {
+                logMessage(`${cell.desc}`, "text-teal-300");
+                finalizeTurn();
+            }
+            // Jenis Petak 2: MASUK PENJARA
+            else if (cell.type === "go_to_jail") {
+                player.position = 10; // Geser ke petak kunjungan penjara
+                player.isJailed = true;
+                player.jailTurns = 0;
+                playSound('fail');
+                logMessage(`🚨 Oh tidak! ${player.name} melanggar ketertiban lalu lintas dan dimasukkan ke Penjara untuk edukasi kedisiplinan!`, "text-rose-400");
+                updateBoard();
+                finalizeTurn();
+            }
+            // Jenis Petak 3: RETRIBUSI DAERAH / PAJAK
+            else if (cell.type === "tax") {
+                player.cash -= cell.rent;
+                playSound('fail');
+                logMessage(`💸 ${player.name} membayar retribusi pemeliharaan kota Sidoarjo sebesar Rp${cell.rent.toLocaleString('id-ID')}`, "text-rose-300");
+                checkBankruptcy(player);
+                finalizeTurn();
+            }
+            // Jenis Petak 4: KARTU DANA UMUM
+            else if (cell.type === "dana_umum") {
+                const card = getRandomCard(danaUmumCards);
+                showCardModal("DANA UMUM SIDOARJO ✉️", card.text, () => {
+                    if (card.type === "reward") {
+                        player.cash += card.amount;
+                        playSound('cash');
+                        logMessage(`✉️ Dana Umum: ${player.name} mendapat bonus Rp${card.amount.toLocaleString('id-ID')} karena ${card.text}`, "text-emerald-400");
+                    } else {
+                        player.cash -= card.amount;
+                        playSound('fail');
+                        logMessage(`✉️ Dana Umum: ${player.name} membayar biaya Rp${card.amount.toLocaleString('id-ID')} karena ${card.text}`, "text-rose-300");
+                        checkBankruptcy(player);
+                    }
+                    finalizeTurn();
+                });
+            }
+            // Jenis Petak 5: KARTU KESEMPATAN
+            else if (cell.type === "kesempatan") {
+                const card = getRandomCard(kesempatanCards);
+                showCardModal("KARTU KESEMPATAN ⭐", card.text, () => {
+                    if (card.type === "reward") {
+                        player.cash += card.amount;
+                        playSound('cash');
+                        logMessage(`⭐ Kesempatan: ${player.name} mendapat Rp${card.amount.toLocaleString('id-ID')} karena ${card.text}`, "text-emerald-400");
+                        finalizeTurn();
+                    } else if (card.type === "penalty") {
+                        player.cash -= card.amount;
+                        playSound('fail');
+                        logMessage(`⭐ Kesempatan: ${player.name} membayar denda Rp${card.amount.toLocaleString('id-ID')} karena ${card.text}`, "text-rose-300");
+                        checkBankruptcy(player);
+                        finalizeTurn();
+                    } else if (card.type === "move") {
+                        logMessage(`⭐ Kesempatan: ${player.name} melangkah demi mempelajari Sidoarjo!`, "text-amber-300");
+                        // Gerakan bonus langkah
+                        setTimeout(() => {
+                            movePlayer(card.steps);
+                        }, 500);
+                    }
+                });
+            }
+            // Jenis Petak 6: PROPERTI KECAMATAN / STASIUN / UTILITAS
+            else if (cell.type === "property" || cell.type === "stasiun" || cell.type === "utilitas") {
+                // Jika belum dimiliki oleh siapapun
+                if (cell.owner === null) {
+                    if (player.cash >= cell.price) {
+                        // Tawarkan pembelian melalui modal popup
+                        showActionModal(
+                            "Beli Investasi Daerah? 🏗️",
+                            `Apakah kamu ingin membeli aset <strong>${cell.name}</strong> seharga <span class='text-emerald-600 font-bold'>Rp${cell.price.toLocaleString('id-ID')}</span>?<br><br><span class='text-xs text-slate-500'>${cell.desc}</span>`,
+                            () => {
+                                // Konfirmasi Beli
+                                player.cash -= cell.price;
+                                cell.owner = player.id;
+                                player.assets.push(cell.name);
+                                playSound('cash');
+                                logMessage(`✅ ${player.name} berhasil berinvestasi dan membeli ${cell.name}!`, "text-emerald-400");
+                                finalizeTurn();
+                            },
+                            () => {
+                                // Batal Beli
+                                logMessage(`❌ ${player.name} memutuskan untuk melewati tawaran investasi di ${cell.name}.`, "text-slate-400");
+                                finalizeTurn();
+                            }
+                        );
+                    } else {
+                        logMessage(`${player.name} tidak memiliki saldo yang cukup untuk membeli ${cell.name}. Sisa saldo: Rp${player.cash.toLocaleString('id-ID')}`, "text-slate-400");
+                        finalizeTurn();
+                    }
+                }
+                // Jika milik sendiri
+                else if (cell.owner === player.id) {
+                    logMessage(`🏠 ${player.name} singgah di aset milik sendiri di ${cell.name}. Bersantai sejenak menikmati suasana.`, "text-teal-300");
+                    finalizeTurn();
+                }
+                // Jika milik pemain lain (Wajib Bayar Sewa)
+                else {
+                    const owner = players.find(pl => pl.id === cell.owner);
+                    if (owner && !owner.bankrupt) {
+                        let rentCost = cell.rent;
+                        
+                        // Rule khusus stasiun (Sewa bertambah jika punya banyak stasiun)
+                        if (cell.type === "stasiun") {
+                            const stasiunCount = sdaBoard.filter(b => b.type === "stasiun" && b.owner === owner.id).length;
+                            rentCost = cell.rent * stasiunCount;
+                        }
+
+                        player.cash -= rentCost;
+                        owner.cash += rentCost;
+                        playSound('fail');
+                        logMessage(`💥 ${player.name} wajib membayar sewa retribusi kunjungan sebesar Rp${rentCost.toLocaleString('id-ID')} kepada pemilik ${owner.name} di ${cell.name}!`, "text-rose-400");
+                        
+                        checkBankruptcy(player);
+                        finalizeTurn();
+                    } else {
+                        // Pemilik bangkrut, gratis sewa
+                        finalizeTurn();
+                    }
+                }
+            }
+        }
+
+        // Acak Kartu dari tumpukan
+        function getRandomCard(cardArray) {
+            const index = Math.floor(Math.random() * cardArray.length);
+            return cardArray[index];
+        }
+
+        // Mengakhiri giliran dan lanjut ke pemain selanjutnya
+        function finalizeTurn() {
+            updateLeaderboard();
+            updateBoard();
+
+            // Cek sisa pemain yang belum bangkrut
+            const activePlayers = players.filter(p => !p.bankrupt);
+            if (activePlayers.length <= 1) {
+                finishGame();
+                return;
+            }
+
+            // Ganti Giliran Pemain
+            do {
+                currentPlayerIndex = (currentPlayerIndex + 1) % playerCount;
+            } while (players[currentPlayerIndex].bankrupt);
+
+            isMoving = false;
+            
+            // Aktifkan kembali tombol lempar dadu
+            const btn = document.getElementById('btn-roll-dice');
+            btn.disabled = false;
+            btn.className = "bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-4 py-2 rounded-xl shadow-md border-b-2 border-indigo-900 transition-all";
+            
+            updateBoard();
+        }
+
+        // Pengecekan Apakah Pemain Bangkrut
+        function checkBankruptcy(player) {
+            if (player.cash < 0) {
+                player.bankrupt = true;
+                player.cash = 0;
+                
+                // Kembalikan semua aset miliknya ke pasar umum (null)
+                sdaBoard.forEach(b => {
+                    if (b.owner === player.id) b.owner = null;
+                });
+
+                playSound('fail');
+                logMessage(`💀 Oh tidak! Pemain ${player.name} kehabisan seluruh kasnya dan dinyatakan BANGRUT!`, "text-red-500 font-extrabold");
+            }
+        }
+
+        // Selesaikan Permainan Secara Instan & Tampilkan Rekap Juara
+        function finishGame() {
+            // Hitung aset & total kekayaan akhir tiap pemain
+            // Total Kekayaan = Sisa Kas + Nilai Harga Beli Seluruh Aset Kecamatan miliknya
+            players.forEach(p => {
+                let assetValueSum = 0;
+                sdaBoard.forEach(b => {
+                    if (b.owner === p.id) {
+                        assetValueSum += (b.price || 0);
+                    }
+                });
+                p.totalValue = p.cash + assetValueSum;
+            });
+
+            // Urutkan klasemen pemain dari terkaya ke paling miskin
+            const rankPlayers = [...players].sort((a, b) => b.totalValue - a.totalValue);
+
+            const scoreboardContainer = document.getElementById('final-scoreboard');
+            scoreboardContainer.innerHTML = "";
+
+            rankPlayers.forEach((p, idx) => {
+                let badge = "🥉";
+                let predikat = "Pelopor UMKM Delta";
+                if (idx === 0) {
+                    badge = "👑 Juara 1 (Bupati Cilik Sidoarjo)";
+                    predikat = "Bupati Cilik Berprestasi & Pemimpin Masa Depan";
+                } else if (idx === 1) {
+                    badge = "🥈 Juara 2 (Duta Budaya Delta)";
+                    predikat = "Duta Budaya Sidoarjo Cilik Berbakat";
+                } else if (idx === 2) {
+                    badge = "🥉 Juara 3 (Sahabat UMKM)";
+                    predikat = "Pelopor Kemajuan Industri Kreatif Sidoarjo";
+                }
+
+                scoreboardContainer.innerHTML += `
+                    <div class="p-4 rounded-2xl border-2 border-indigo-100 bg-indigo-50/50 flex flex-col md:flex-row items-center justify-between gap-2 text-left">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${p.emoji}</span>
+                            <div>
+                                <h4 class="font-kids text-lg text-indigo-950">${p.name} <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-bold ml-1">${p.sekolah}</span></h4>
+                                <p class="text-xs text-amber-800 font-bold">Gelar: <span class="text-indigo-600">${predikat}</span></p>
+                            </div>
+                        </div>
+                        <div class="text-center md:text-right mt-2 md:mt-0">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Total Kekayaan</p>
+                            <span class="text-xl font-kids text-emerald-600">Rp${p.totalValue.toLocaleString('id-ID')}</span>
+                            <span class="text-xs text-slate-600 block">Sisa Uang Tunai: Rp${p.cash.toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            switchScreen('screen-gameover');
+            playSound('success');
+        }
+
+        // Mengulang permainan dari awal beranda
+        function restartGame() {
+            switchScreen('screen-home');
+        }
+
+        // ================= MODAL WINDOW CONTROLLER =================
+        function showActionModal(title, desc, confirmCallback, cancelCallback) {
+            const modal = document.getElementById('modal-action');
+            document.getElementById('modal-action-title').innerHTML = title;
+            document.getElementById('modal-action-desc').innerHTML = desc;
+            
+            const btnConfirm = document.getElementById('modal-btn-confirm');
+            const btnCancel = document.getElementById('modal-btn-cancel');
+
+            btnConfirm.onclick = () => {
+                modal.classList.add('hidden');
+                confirmCallback();
+            };
+            btnCancel.onclick = () => {
+                modal.classList.add('hidden');
+                cancelCallback();
+            };
+
+            modal.classList.remove('hidden');
+        }
+
+        function showCardModal(title, text, callback) {
+            const modal = document.getElementById('modal-action');
+            document.getElementById('modal-action-title').innerHTML = title;
+            document.getElementById('modal-action-desc').innerHTML = `<div class='bg-amber-50 p-4 rounded-xl border border-amber-200 text-slate-800 font-bold text-center italic'>"${text}"</div>`;
+            
+            const btnConfirm = document.getElementById('modal-btn-confirm');
+            const btnCancel = document.getElementById('modal-btn-cancel');
+
+            btnConfirm.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Oke, Siap!`;
+            btnCancel.classList.add('hidden'); // Sembunyikan tombol batal untuk kartu nasib
+
+            btnConfirm.onclick = () => {
+                modal.classList.add('hidden');
+                btnConfirm.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i> Beli Sekarang`;
+                btnCancel.classList.remove('hidden');
+                callback();
+            };
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // Tampilkan Ensiklopedia Khas Sidoarjo & Petunjuk Bermain
+        function openModalInfo(mode) {
+            const content = document.getElementById('modal-info-content');
+            let html = "";
+
+            if (mode === 'petunjuk') {
+                html = `
+                    <div class="p-2">
+                        <span class="text-4xl">📖</span>
+                        <h3 class="text-3xl font-kids text-indigo-950 mt-1 mb-4">Cara Bermain Monopoli Sidoarjo</h3>
+                        
+                        <div class="space-y-4 text-sm text-slate-700 leading-relaxed">
+                            <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <h4 class="font-bold text-indigo-900 mb-1">🏁 1. Modal Awal</h4>
+                                <p>Setiap siswa/pemain mendapatkan modal uang Rp500.000 untuk membeli tanah kecamatan, stasiun, atau utilitas umum di Sidoarjo.</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <h4 class="font-bold text-indigo-900 mb-1">🎲 2. Melangkah dengan Dadu</h4>
+                                <p>Lempar dadu untuk melangkah mengitari peta 18 kecamatan di Kabupaten Sidoarjo. Dapatkan uang tambahan setiap kali melewati kotak START.</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <h4 class="font-bold text-indigo-900 mb-1">🏠 3. Pembelian & Sewa</h4>
+                                <p>Jika mendarat di kecamatan kosong, kamu boleh membelinya sebagai investasi daerah. Jika pemain lain mendarat di wilayahmu, mereka wajib membayar uang retribusi sewa!</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <h4 class="font-bold text-indigo-900 mb-1">🌟 4. Kartu Dana Umum & Kesempatan</h4>
+                                <p>Mendarat di sini memicu kejadian seru khas budaya Sidoarjo, seperti mengikuti festival lokal, memborong kerupuk udang, atau terjebak macet.</p>
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border border-indigo-100 shadow-sm">
+                                <h4 class="font-bold text-indigo-900 mb-1">🏆 5. Penentuan Pemenang</h4>
+                                <p>Game berakhir saat ada pemain bangkrut atau klik tombol "Akhiri Permainan". Pemenang ditentukan oleh total uang tunai dan harga aset terbanyak!</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (mode === 'profil') {
+                html = `
+                    <div class="p-2">
+                        <span class="text-4xl">🦞🐟</span>
+                        <h3 class="text-3xl font-kids text-indigo-950 mt-1 mb-4">Profil Kabupaten Sidoarjo</h3>
+                        <p class="text-xs text-slate-600 mb-6 leading-relaxed">Kabupaten Sidoarjo juga dikenal sebagai "Kota Delta" karena berada di antara dua percabangan Sungai Brantas, yaitu Sungai Mas dan Sungai Porong. Kabupaten ini kaya akan tradisi budaya, sejarah kolonial, hingga industri kreatif rakyat.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">🦞</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Maskot Udang & Bandeng</h4>
+                                    <p class="text-xs text-slate-600">Simbol melimpahnya potensi perikanan tambak payau khas Sidoarjo sebagai penopang gizi bangsa.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">👘</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Batik Jetis</h4>
+                                    <p class="text-xs text-slate-600">Kerajinan batik tulis khas kampung Jetis sejak 1675 yang kaya dengan warna-warna cerah berani.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">🛕</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Candi Pari & Candi Sumur</h4>
+                                    <p class="text-xs text-slate-600">Situs peninggalan bersejarah dari era Majapahit yang terletak di Kecamatan Candi.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">👜</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Tanggulangin</h4>
+                                    <p class="text-xs text-slate-600">Pusat kerajinan kulit terkenal di Indonesia yang memproduksi tas, koper, dan sepatu berkualitas.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">🥣</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Kupang Lontong</h4>
+                                    <p class="text-xs text-slate-600">Kuliner legendaris berbahan dasar kerang kecil (kupang) disiram petis manis gurih khas pesisir.</p>
+                                </div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-indigo-100 shadow-sm flex items-start gap-3">
+                                <span class="text-2xl">🌋</span>
+                                <div>
+                                    <h4 class="font-bold text-indigo-900 text-sm">Lumpur Lapindo</h4>
+                                    <p class="text-xs text-slate-600">Fenomena semburan lumpur panas di Kecamatan Porong yang kini menjadi sarana wisata edukasi geologi.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            content.innerHTML = html;
+            document.getElementById('modal-info').classList.remove('hidden');
+        }
+
+        function closeModalInfo() {
+            document.getElementById('modal-info').classList.add('hidden');
+        }
+
+        // Mengatur Musik Musik Latar Belakang (Toggle ON / OFF)
+        function toggleAudio() {
+            const bgm = document.getElementById('bgm');
+            const status = document.getElementById('music-status');
+            
+            // Resume Audio Context jika diperlukan
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (bgm.paused) {
+                bgm.play().then(() => {
+                    status.innerText = "ON";
+                    status.className = "text-emerald-600 font-bold";
+                }).catch(e => {
+                    alert("Interaksi dengan layar terlebih dahulu agar peramban mengizinkan audio.");
+                });
+            } else {
+                bgm.pause();
+                status.innerText = "OFF";
+                status.className = "text-rose-500 font-bold";
+            }
+        }
+
+        // Jalankan render awal form pendaftaran pemain
+        setPlayerCount(2);
+        lucide.createIcons();
+    </script>
+</body>
+</html>
